@@ -1,0 +1,88 @@
+version: '3.8'
+
+services:
+  eureka-service:
+    build:
+      context: ./eureka-service
+    ports:
+      - "8761:8761"
+    container_name: eureka-service
+    hostname: eureka-service
+    networks:
+      - spring-cloud-network
+
+  gateway-service:
+    build:
+      context: ./gateway-service
+    ports:
+      - "8888:8888"
+    container_name: gateway-service
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:8761/eureka/
+    depends_on:
+      - eureka-service
+    networks:
+      - spring-cloud-network
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - spring-cloud-network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+
+  service-client:
+    build:
+      context: ./service-client
+    ports:
+      - "8088:8088"
+    container_name: service-client
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:8761/eureka/
+    depends_on:
+      - eureka-service
+      - postgres
+    networks:
+      - spring-cloud-network
+
+  service-voiture:
+    build:
+      context: ./service-voiture
+    ports:
+      - "8089:8089"
+    container_name: service-voiture
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:8761/eureka/
+    depends_on:
+      - eureka-service
+      - service-client
+      - postgres
+    networks:
+      - spring-cloud-network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin7@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - spring-cloud-network
+
+networks:
+  spring-cloud-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

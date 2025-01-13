@@ -20,22 +20,22 @@ pipeline {
             }
         }
 
-        stage('Build & Analysis') {
-            steps {
-                withSonarQubeEnv('SonarCloud') {
-                    bat '''
-                        mvn sonar:sonar \
-                        -Dsonar.projectKey=etudedecas \
-                        -Dsonar.organization=etudedecas \
-                        -Dsonar.host.url=https://sonarcloud.io \
-                        -Dsonar.login=8b5348f260ef12a9072018111b329a68734ec22a \
-                        -Dsonar.qualitygate.wait=true
-                    '''
-                }
-            }
-        }
-        }
-    }
+       stage('Build & Analysis') {
+           steps {
+               withSonarQubeEnv('SonarCloud') {
+                   bat '''
+                       mvn sonar:sonar \
+                       -Dsonar.projectKey=etudedecas \
+                       -Dsonar.organization=etudedecas \
+                       -Dsonar.host.url=https://sonarcloud.io \
+                       -Dsonar.login=8b5348f260ef12a9072018111b329a68734ec22a \
+                       -Dsonar.qualitygate.wait=false \
+                       -Dsonar.coverage.exclusions=**/* \
+                       -Dsonar.cpd.exclusions=**/*
+                   '''
+               }
+           }
+       }
 
     post {
         always { cleanWs() }

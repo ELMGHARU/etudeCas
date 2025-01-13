@@ -25,14 +25,15 @@ pipeline {
                 withSonarQubeEnv('SonarCloud') {
                     bat '''
                         mvn sonar:sonar \
-                        -Dsonar.projectKey=spring-cloud \
-                        -Dsonar.organization=emsig5ky \
+                        -Dsonar.projectKey=etudedecas \
+                        -Dsonar.organization=etudedecas \
                         -Dsonar.host.url=https://sonarcloud.io \
-                        -Dsonar.login=e8ffa2692c10fb241956a43d6bfb66c09172a282 \
+                        -Dsonar.login=8b5348f260ef12a9072018111b329a68734ec22a \
                         -Dsonar.qualitygate.wait=true
                     '''
                 }
             }
+        }
         }
     }
 
